@@ -1,0 +1,31 @@
+{
+  "name": "gyan-sagar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BearerOP/gyan-sagar.git"
+  },
+  "author": "bearerOP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BearerOP/gyan-sagar/issues"
+  },
+  "homepage": "https://github.com/BearerOP/gyan-sagar#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.6.3",
+    "nodemon": "^3.1.7"
+  }
+}
