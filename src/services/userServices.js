@@ -58,7 +58,6 @@ const login = async (req, res) => {
       status: 200,
     };
   } catch (error) {
-    console.log(error);
     return {
       message: error.message || "Internal server error",
       success: false,
@@ -96,7 +95,6 @@ const register = async (req, res) => {
 const logout = async (req, res) => {
   try {
     const token = req.cookies.token;
-    console.log(token);
     
     const user = await User.findOne({ authKey: token });
     if (!user) {

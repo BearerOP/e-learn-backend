@@ -199,7 +199,6 @@ const getMyCourses = async (admin) => {
         message: "No courses found",
       };
     }
-    console.log(user);
 
     return {
       status: 200,
