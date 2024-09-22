@@ -21,14 +21,29 @@ const userSchema = new Schema({
     required: true,
     enum: ['admin', 'user'],
   },
-  myCourses:{
-    type: Array,
-    default: []
+  myCourses: {
+    type: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Course',
+      }
+    ],
+    default: [], 
+  },
+  purchasedCourses:{
+    type: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Course',
+        }
+        ],
   },
   authKey:{
     type: String,
     default: ''
   }
 });
+
+userSchema.index({ email: 1 });
 
 module.exports = mongoose.model('User', userSchema);
