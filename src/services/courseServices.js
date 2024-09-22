@@ -188,8 +188,8 @@ const deleteCourse = async (courseId, admin) => {
 const getMyCourses = async (admin) => {
   try {
     const user = await User.findOne({ _id: admin._id }).populate({
-      path: 'myCourses', // Assuming myCourses contains course IDs
-      select: 'name category status', // Specify the fields to populate
+      path: "myCourses", // Assuming myCourses contains course IDs
+      select: "name category status", // Specify the fields to populate
     });
 
     if (!user || !user.myCourses.length) {
@@ -200,7 +200,6 @@ const getMyCourses = async (admin) => {
       };
     }
     console.log(user);
-    
 
     return {
       status: 200,
@@ -216,6 +215,97 @@ const getMyCourses = async (admin) => {
   }
 };
 
+const purchaseCourse = async (courseId, user) => {
+  try {
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return {
+        status: 404,
+        message: "Course not found",
+        success: false,
+      };
+    }
+
+    // Check if the course is published
+    if (course.status !== "published") {
+      return {
+        status: 400,
+        message: "Cannot purchase an unpublished course",
+        success: false,
+      };
+    }
+
+    const userCourse = await User.findOne({ _id: user._id });
+    if (!userCourse) {
+      return {
+        status: 404,
+        message: "User not found",
+        success: false,
+      };
+    }
+
+    const courseInUserCourses = userCourse.myCourses.find(
+      (courseId) => courseId.toString() === course._id.toString()
+    );
+    if (courseInUserCourses) {
+      return {
+        status: 400,
+        message: "Course already purchased",
+        success: false,
+      };
+    }
+
+    // Optionally, check if the user has sufficient funds
+    // if (user.balance < course.price) {
+    //   return {
+    //     status: 400,
+    //     message: "Insufficient funds",
+    //     success: false,
+    //   };
+    // }
+
+    userCourse.myCourses.push(course._id);
+    await userCourse.save();
+
+    return {
+      status: 200,
+      message: "Course purchased successfully",
+      success: true,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
+
+const getMyPurchasedCourses = async (user) => {
+  try {
+    const userCourse = await User.findOne({ _id: user._id });
+    if (!userCourse) {
+      return {
+        status: 404,
+        message: "User not found",
+        success: false,
+      };
+    }
+    const myCourses = userCourse.myCourses;
+    return {
+      status: 200,
+      message: "Courses retrieved successfully",
+      success: true,
+      data: myCourses,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
 
 module.exports = {
   addCourse,
@@ -224,4 +314,6 @@ module.exports = {
   editCourse,
   deleteCourse,
   getMyCourses,
+  purchaseCourse,
+  getMyPurchasedCourses,
 };
