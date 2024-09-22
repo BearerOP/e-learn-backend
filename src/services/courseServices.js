@@ -188,8 +188,8 @@ const deleteCourse = async (courseId, admin) => {
 const getMyCourses = async (admin) => {
   try {
     const user = await User.findOne({ _id: admin._id }).populate({
-      path: 'myCourses',
-
+      path: 'myCourses', // Assuming myCourses contains course IDs
+      select: 'name category status', // Specify the fields to populate
     });
 
     if (!user || !user.myCourses.length) {
@@ -199,6 +199,8 @@ const getMyCourses = async (admin) => {
         message: "No courses found",
       };
     }
+    console.log(user);
+    
 
     return {
       status: 200,
