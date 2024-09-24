@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-
   username: {
     type: String,
     required: true,
@@ -12,8 +11,16 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
-  password: {
-    type: String,
+  avatar: {
+    type: String, // URL for the avatar image
+    required: false, // Optional
+  },
+  provider: {
+    type: String, // 'github', 'google', etc.
+    required: true,
+  },
+  providerId: {
+    type: String, // OAuth provider's user ID
     required: true,
   },
   role: {
@@ -30,15 +37,16 @@ const userSchema = new Schema({
     ],
     default: [], 
   },
-  purchasedCourses:{
+  purchasedCourses: {
     type: [
       {
         type: mongoose.Schema.ObjectId,
         ref: 'Course',
-        }
-        ],
+      }
+    ],
+    default: [], 
   },
-  authKey:{
+  authKey: {
     type: String,
     default: ''
   }

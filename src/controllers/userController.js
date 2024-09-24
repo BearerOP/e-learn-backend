@@ -1,26 +1,27 @@
 const {
-  register,
-  login,
+  // register,
+  // login,
   logout,
   profile,
+  loginOrRegister,
 } = require('../services/userServices');
 
-exports.register = async (req, res) => {
-  try {
-    const data = await register(req, res);
-    if (data.success) {
-      res.status(200).json(data);
-    } else {
-      res.status(400).json(data);
-    }
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+// exports.register = async (req, res) => {
+//   try {
+//     const data = await register(req, res);
+//     if (data.success) {
+//       res.status(200).json(data);
+//     } else {
+//       res.status(400).json(data);
+//     }
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 
 exports.login = async (req, res) => {
     try {
-      const data = await login(req, res);
+      const data = await loginOrRegister(req, res);
       if (data.success) {
         res.status(200).json(data);
       } else {
