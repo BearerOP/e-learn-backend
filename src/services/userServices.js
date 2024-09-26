@@ -219,19 +219,26 @@ const profile = async (req, res) => {
 
     // Fetch the user along with populated courses for both myCourses and purchasedCourses
     const userWithCourses = await User.findById(user._id)
-      .populate("myCourses", "name") // Populate myCourses with only name
-      .populate("purchasedCourses", "name"); // Populate purchasedCourses with only name
+      .populate("myCourses", "name category price status") // Populate myCourses with selected fields
+      .populate("purchasedCourses", "name category price"); // Populate purchasedCourses with only name
 
     if (!userWithCourses) {
       return { success: false, message: "User not found", status: 400 };
     }
 
-    // Extract course names from populated data
-    const myCoursesNames = userWithCourses.myCourses.map(
-      (course) => course.name
-    );
-    const purchasedCoursesNames = userWithCourses.purchasedCourses.map(
-      (course) => course.name
+    const myCoursesDetails = userWithCourses.myCourses.map((course) => ({
+      name: course.name,
+      category: course.category,
+      price: course.price,
+      status: course.status,
+    }));
+
+    const purchasedCoursesDetails = userWithCourses.purchasedCourses.map(
+      (course) => ({
+        name: course.name,
+        category: course.category,
+        price: course.price,
+      })
     );
 
     // Return user data along with course names
@@ -239,8 +246,8 @@ const profile = async (req, res) => {
       success: true,
       user: {
         ...userWithCourses.toObject(), // Convert user document to plain object
-        myCourses: myCoursesNames,
-        purchasedCourses: purchasedCoursesNames,
+        myCourses: myCoursesDetails,
+        purchasedCourses: purchasedCoursesDetails,
       },
       status: 400,
     };
