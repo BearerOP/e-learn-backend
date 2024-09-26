@@ -49,7 +49,15 @@ const userSchema = new Schema({
   authKey: {
     type: String,
     default: ''
-  }
+  },
+  provider: {
+    type: String, // 'github', 'google', etc.
+    required: true,
+  },
+  providerId: {
+    type: String, // OAuth provider's user ID
+    required: true,
+  },
 });
 
 userSchema.index({ email: 1 });

@@ -5,7 +5,10 @@ const User = require("../src/models/userModel");
 // Middleware for handling auth
 async function userAuth(req, res, next) {
   try {
+    console.log('Reached User Auth');
     const tokenHead = req.headers["authorization"];
+    console.log(tokenHead);
+    
     
     if (!tokenHead) {
       return {
