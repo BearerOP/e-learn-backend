@@ -1,4 +1,5 @@
 const User = require("../models/userModel.js");
+const Course = require("../models/courseModel.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -125,12 +126,12 @@ const loginOrRegister = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 1000, // 1 hour expiration
       });
-      
+
       return {
         success: true,
         message: "User logged in successfully",
         token,
-        role:updatedUser.role,
+        role: updatedUser.role,
         status: 200,
       };
     } else {
@@ -169,7 +170,7 @@ const loginOrRegister = async (req, res) => {
         success: true,
         message: "User registered successfully",
         token,
-        role:newUser.role,
+        role: newUser.role,
         status: 201,
       };
     }
@@ -215,8 +216,36 @@ const profile = async (req, res) => {
     if (!user) {
       return { success: false, message: "Invalid token", status: 400 };
     }
-    return { success: true, user, status: 200 };
+
+    // Fetch the user along with populated courses for both myCourses and purchasedCourses
+    const userWithCourses = await User.findById(user._id)
+      .populate("myCourses", "name") // Populate myCourses with only name
+      .populate("purchasedCourses", "name"); // Populate purchasedCourses with only name
+
+    if (!userWithCourses) {
+      return { success: false, message: "User not found", status: 400 };
+    }
+
+    // Extract course names from populated data
+    const myCoursesNames = userWithCourses.myCourses.map(
+      (course) => course.name
+    );
+    const purchasedCoursesNames = userWithCourses.purchasedCourses.map(
+      (course) => course.name
+    );
+
+    // Return user data along with course names
+    return {
+      success: true,
+      user: {
+        ...userWithCourses.toObject(), // Convert user document to plain object
+        myCourses: myCoursesNames,
+        purchasedCourses: purchasedCoursesNames,
+      },
+      status: 400,
+    };
   } catch (error) {
+    console.error(error);
     return { success: false, message: error.message, status: 500 };
   }
 };
