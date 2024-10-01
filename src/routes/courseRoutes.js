@@ -19,8 +19,8 @@ router.get('/get/:id', getCourseById);                       // Get course by id
 router.put('/edit/:id', userAuth, editCourse);               // Update course by id (changed to PUT and added id param)
 router.delete('/delete/:id', userAuth, deleteCourse);        // Delete course by id (changed to DELETE and added id param)
 router.get('/myCourses',userAuth,getMyCourses)
-router.post('/purchase/:id', userAuth, purchaseCourse);      // Purchase course by id (added id param)
 router.get('/purchased',userAuth,getMyPurchasedCourses)
+router.post('/purchase/:id', userAuth, purchaseCourse);      // Purchase course by id (added id param)
 
 
 module.exports = router;

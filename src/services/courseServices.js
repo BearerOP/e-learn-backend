@@ -282,6 +282,7 @@ const purchaseCourse = async (courseId, user) => {
 
 const getMyPurchasedCourses = async (user) => {
   try {
+    // Find the user by their ID
     const userCourse = await User.findOne({ _id: user._id });
     if (!userCourse) {
       return {
@@ -290,12 +291,20 @@ const getMyPurchasedCourses = async (user) => {
         success: false,
       };
     }
-    const myCourses = userCourse.myCourses;
+
+    // Get the array of purchased course ObjectIds
+    const purchasedCourseIds = userCourse.purchasedCourses;
+
+    // Fetch course details for each course ID in the purchasedCourses array
+    const purchasedCourses = await Course.find({
+      _id: { $in: purchasedCourseIds },
+    });
+
     return {
       status: 200,
       message: "Courses retrieved successfully",
       success: true,
-      data: myCourses,
+      data: purchasedCourses, // Full course details
     };
   } catch (error) {
     return {
@@ -305,6 +314,7 @@ const getMyPurchasedCourses = async (user) => {
     };
   }
 };
+
 
 module.exports = {
   addCourse,
