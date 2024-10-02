@@ -66,7 +66,6 @@ const getCourseById = async (courseId) => {
     // Find course by id and populate author
     const course = await Course.findOne({
       _id: courseId,
-      status: "published",
     }).populate("author", "username email");
     if (!course) {
       return {
