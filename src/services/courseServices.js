@@ -299,6 +299,8 @@ const purchaseCourse = async (courseId, user) => {
         success: false,
       };
     }
+    console.log(course);
+    
 
     // Check if the course is published
     if (course.status !== "published") {
@@ -318,16 +320,16 @@ const purchaseCourse = async (courseId, user) => {
       };
     }
 
-    // const courseInUserCourses = userCourse.myCourses.find(
-    //   (courseId) => courseId.toString() === course._id.toString()
-    // );
-    // if (courseInUserCourses) {
-    //   return {
-    //     status: 400,
-    //     message: "Course already purchased",
-    //     success: false,
-    //   };
-    // }
+    const courseInUserCourses = userCourse.purchasedCourses.find(
+      (courseId) => courseId.toString() === course._id.toString()
+    );
+    if (courseInUserCourses) {
+      return {
+        status: 400,
+        message: "Course already purchased",
+        success: false,
+      };
+    }
 
     // Optionally, check if the user has sufficient funds
     // if (user.balance < course.price) {
@@ -338,8 +340,9 @@ const purchaseCourse = async (courseId, user) => {
     //   };
     // }
 
-    userCourse.myCourses.push(course._id);
-    await userCourse.save();
+    userCourse.purchasedCourses.push(course._id);
+    const savedCourse = await userCourse.save();
+console.log(userCourse);
 
     return {
       status: 200,
