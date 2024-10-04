@@ -318,16 +318,16 @@ const purchaseCourse = async (courseId, user) => {
       };
     }
 
-    const courseInUserCourses = userCourse.myCourses.find(
-      (courseId) => courseId.toString() === course._id.toString()
-    );
-    if (courseInUserCourses) {
-      return {
-        status: 400,
-        message: "Course already purchased",
-        success: false,
-      };
-    }
+    // const courseInUserCourses = userCourse.myCourses.find(
+    //   (courseId) => courseId.toString() === course._id.toString()
+    // );
+    // if (courseInUserCourses) {
+    //   return {
+    //     status: 400,
+    //     message: "Course already purchased",
+    //     success: false,
+    //   };
+    // }
 
     // Optionally, check if the user has sufficient funds
     // if (user.balance < course.price) {
