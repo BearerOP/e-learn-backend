@@ -42,24 +42,35 @@ const addCourse = async (courseData, admin) => {
     };
   }
 };
+const getAllCourses = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
 
-const getAllCourses = async () => {
   try {
-    // Filter courses where status is 'published'
-    const courses = await Course.find({ status: "published" }).populate(
-      "author",
-      "username email"
-    );
+    // Fetch only published courses with pagination
+    const courses = await Course.find({ status: "published" })
+      .populate("author", "username email")
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-    return { status: 200, success: true, data: courses };
+    const totalCourses = await Course.countDocuments({ status: "published" });
+
+    return{
+      status: 200,
+      success: true,
+      data: courses,
+      totalCourses,
+      currentPage: page,
+      totalPages: Math.ceil(totalCourses / limit),
+    };
   } catch (error) {
-    return {
+    return{
       status: 500,
       success: false,
       message: error.message,
     };
   }
 };
+
 
 const getCourseById = async (courseId) => {
   try {
@@ -111,6 +122,8 @@ const editCourse = async (courseId, courseData, admin) => {
       { _id: courseId },
       { $set: courseData }
     );
+    console.log(updatedCourse);
+    
     if (!updatedCourse) {
       return {
         status: 500,
@@ -212,6 +225,69 @@ const getMyCourses = async (admin) => {
     };
   }
 };
+
+const publishedCourses = async (admin) => {
+  try {
+    // Find the user by their ID and populate the myCourses field with only the published courses
+    const user = await User.findOne({ _id: admin._id }).populate({
+      path: "myCourses", // Assuming myCourses contains course IDs
+      match: { status: "published" }, // Only populate courses with the 'published' status
+      select: "name category status", // Specify the fields to populate
+    });
+
+    if (!user || !user.myCourses.length) {
+      return {
+        status: 404,
+        success: false,
+        message: "No published courses found",
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      data: user.myCourses,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+const draftedCourses = async (admin) => {
+  try {
+    // Find the user by their ID and populate the myCourses field with only the published courses
+    const user = await User.findOne({ _id: admin._id }).populate({
+      path: "myCourses", // Assuming myCourses contains course IDs
+      match: { status: "draft" }, // Only populate courses with the 'draft' status
+      select: "name category status", // Specify the fields to populate
+    });
+
+    if (!user || !user.myCourses.length) {
+      return {
+        status: 404,
+        success: false,
+        message: "No drafted courses found",
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      data: user.myCourses,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
 
 const purchaseCourse = async (courseId, user) => {
   try {
@@ -324,4 +400,6 @@ module.exports = {
   getMyCourses,
   purchaseCourse,
   getMyPurchasedCourses,
+  publishedCourses,
+  draftedCourses
 };

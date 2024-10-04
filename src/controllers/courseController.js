@@ -7,6 +7,8 @@ const {
   getMyCourses,
   purchaseCourse,
   getMyPurchasedCourses,
+  publishedCourses,
+  draftedCourses
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -20,7 +22,7 @@ exports.addCourse = async (req, res) => {
 
 exports.getAllCourses = async (req, res) => {
   try {
-    const data = await getAllCourses();
+    const data = await getAllCourses(req,res);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get all courses" });
@@ -71,9 +73,28 @@ exports.getMyPurchasedCourses = async (req, res) => {
     res.status(500).json({ message: "Failed to get my purchased courses" });
   }
 };
+
 exports.getMyCourses = async (req, res) => {
   try {
     const data = await getMyCourses(req.user);
+    res.status(data.success ? 200 : 404).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get my courses" });
+  }
+};
+
+exports.publishedCourses = async (req, res) => {
+  try {
+    const data = await publishedCourses(req.user);
+    res.status(data.success ? 200 : 404).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get my courses" });
+  }
+};
+
+exports.draftedCourses = async (req, res) => {
+  try {
+    const data = await draftedCourses(req.user);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get my courses" });
