@@ -33,7 +33,7 @@ GyanSagar is a course-selling web platform where users can browse and purchase e
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/BearerOP/gyan-sagar.git
+   git clone https://github.com/BearerOP/gyansagar-backend.git
    cd gyan-sagar
    ```
 
