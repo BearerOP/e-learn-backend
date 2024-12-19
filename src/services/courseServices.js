@@ -1,5 +1,4 @@
-const User = require("../models/userModel");
-const Course = require("../models/courseModel");
+const { Course, User } = require("../models/schema");
 
 const addCourse = async (courseData, admin) => {
   try {
@@ -48,7 +47,7 @@ const getAllCourses = async (req, res) => {
   try {
     // Fetch only published courses with pagination
     const courses = await Course.find({ status: "published" })
-      .populate("author", "username email")
+      .populate("createdBy", "username email")
       .skip((page - 1) * limit)
       .limit(limit);
 

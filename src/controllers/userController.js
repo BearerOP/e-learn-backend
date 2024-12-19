@@ -1,6 +1,6 @@
 const {
   // register,
-  // login,
+  login, 
   logout,
   profile,
   loginOrRegister,
@@ -20,16 +20,12 @@ const {
 // };
 
 exports.login = async (req, res) => {
-    try {
-      const data = await loginOrRegister(req, res);
-      if (data.success) {
-        res.status(200).json(data);
-      } else {
-        res.status(403).json(data);
-      }
-    } catch (error) {
-      res.json({ Error: error });
-    }
+  try {
+    const response = await login(req,res);
+    return res.status(response.status).json(response);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 exports.logout = async (req, res) => {
