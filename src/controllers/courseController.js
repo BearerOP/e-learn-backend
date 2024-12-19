@@ -9,6 +9,7 @@ const {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
+  courseByCategory
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -98,5 +99,14 @@ exports.draftedCourses = async (req, res) => {
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get my courses" });
+  }
+};
+
+exports.getCourseByCategory = async (req, res) => {
+  try {
+    const data = await courseByCategory(req.query.category);
+    res.status(data.success ? 200 : 404).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get courses by category" });
   }
 };

@@ -398,6 +398,40 @@ const getMyCourses = async (user) => {
   }
 };
 
+const courseByCategory = async (category) => {
+  try {
+    // Find courses by category
+    const courses = await Course.find({
+      category,
+      status: "published",
+    });
+
+    if (!courses.length) {
+      return {
+        status: 404,
+        message: "No courses found",
+        success: false,
+      };
+    }
+
+    return {
+      status: 200,
+      message: "Courses retrieved successfully",
+      success: true,
+      data: courses,
+    };
+
+  }
+  catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+}
+
+
 module.exports = {
   addCourse,
   getAllCourses,
@@ -409,4 +443,6 @@ module.exports = {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
+  courseByCategory
 };
+
