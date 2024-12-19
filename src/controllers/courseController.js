@@ -8,7 +8,7 @@ const {
   purchaseCourse,
   getMyPurchasedCourses,
   publishedCourses,
-  draftedCourses
+  draftedCourses,
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -31,7 +31,7 @@ exports.getAllCourses = async (req, res) => {
 
 exports.getCourseById = async (req, res) => {
   try {
-    const data = await getCourseById(req.params.id);
+    const data = await getCourseById(req.query.courseId);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get course by id" });

@@ -53,7 +53,7 @@ const getAllCourses = async (req, res) => {
 
     const totalCourses = await Course.countDocuments({ status: "published" });
 
-    return{
+    return {
       status: 200,
       success: true,
       data: courses,
@@ -62,7 +62,7 @@ const getAllCourses = async (req, res) => {
       totalPages: Math.ceil(totalCourses / limit),
     };
   } catch (error) {
-    return{
+    return {
       status: 500,
       success: false,
       message: error.message,
@@ -70,13 +70,12 @@ const getAllCourses = async (req, res) => {
   }
 };
 
-
 const getCourseById = async (courseId) => {
   try {
     // Find course by id and populate author
     const course = await Course.findOne({
       _id: courseId,
-    }).populate("author", "username email");
+    })
     if (!course) {
       return {
         status: 404,
@@ -122,7 +121,7 @@ const editCourse = async (courseId, courseData, admin) => {
       { $set: courseData }
     );
     console.log(updatedCourse);
-    
+
     if (!updatedCourse) {
       return {
         status: 500,
@@ -196,34 +195,6 @@ const deleteCourse = async (courseId, admin) => {
   }
 };
 
-const getMyCourses = async (admin) => {
-  try {
-    const user = await User.findOne({ _id: admin._id }).populate({
-      path: "myCourses", // Assuming myCourses contains course IDs
-      select: "name category status", // Specify the fields to populate
-    });
-
-    if (!user || !user.myCourses.length) {
-      return {
-        status: 404,
-        success: false,
-        message: "No courses found",
-      };
-    }
-
-    return {
-      status: 200,
-      success: true,
-      data: user.myCourses,
-    };
-  } catch (error) {
-    return {
-      status: 500,
-      success: false,
-      message: error.message,
-    };
-  }
-};
 
 const publishedCourses = async (admin) => {
   try {
@@ -287,7 +258,6 @@ const draftedCourses = async (admin) => {
   }
 };
 
-
 const purchaseCourse = async (courseId, user) => {
   try {
     const course = await Course.findById(courseId);
@@ -299,7 +269,6 @@ const purchaseCourse = async (courseId, user) => {
       };
     }
     console.log(course);
-    
 
     // Check if the course is published
     if (course.status !== "published") {
@@ -341,7 +310,7 @@ const purchaseCourse = async (courseId, user) => {
 
     userCourse.purchasedCourses.push(course._id);
     const savedCourse = await userCourse.save();
-console.log(userCourse);
+    console.log(userCourse);
 
     return {
       status: 200,
@@ -392,6 +361,44 @@ const getMyPurchasedCourses = async (user) => {
   }
 };
 
+const getMyCourses = async (user) => {
+  try {
+    // Find the user by their ID
+    const userCourses = await User.findOne({ _id: user._id })
+    .select('purchasedCourses wishlist cart archivedCourses')
+    .populate([
+      { path: 'purchasedCourses', model: 'Course' },
+      { path: 'wishlist', model: 'Course' },
+      { path: 'cart', model: 'Course' },
+      { path: 'archivedCourses', model: 'Course' }
+    ]);
+  
+  console.log(userCourses);
+  
+    
+
+    if (!userCourses) {
+      return {
+        status: 404,
+        message: "User not found",
+        success: false,
+      };
+    }
+
+    return {
+      status: 200,
+      message: "Courses retrieved successfully",
+      success: true,
+      data: userCourses,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
 
 module.exports = {
   addCourse,
@@ -403,5 +410,5 @@ module.exports = {
   purchaseCourse,
   getMyPurchasedCourses,
   publishedCourses,
-  draftedCourses
+  draftedCourses,
 };

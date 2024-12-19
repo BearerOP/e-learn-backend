@@ -36,10 +36,10 @@ const loginOrRegister = async (req, res) => {
         };
       }
 
-      // Update user's authKey with the token
+      // Update user's accessToken with the token
       const updatedUser = await User.findOneAndUpdate(
         { _id: existingUser._id },
-        { authKey: token },
+        { accessToken: token },
         { new: true }
       );
 
@@ -89,10 +89,10 @@ const loginOrRegister = async (req, res) => {
         maxAge: 60 * 60 * 1000,
       });
 
-      // Store token in the new user's authKey
+      // Store token in the new user's accessToken
       await User.findOneAndUpdate(
         { _id: newUser._id },
-        { authKey: token },
+        { accessToken: token },
         { new: true }
       );
 
@@ -156,13 +156,13 @@ const login = async (req, res) => {
       };
     }
 
-    const authKeyInsertion = await User.findOneAndUpdate(
+    const accessTokenInsertion = await User.findOneAndUpdate(
       { _id: existingUser._id },
       { accessToken: token },
       { new: true }
     );
 
-    if (!authKeyInsertion) {
+    if (!accessTokenInsertion) {
       return { message: "Token updation failed", success: false, status: 500 };
     }
 
@@ -199,14 +199,14 @@ const logout = async (req, res) => {
     if (!authToken) {
       return { success: false, message: "authToken is required", status: 400 };
     }
-    const user = await User.findOne({ authKey: authToken });
+    const user = await User.findOne({ accessToken: authToken });
 
     if (!user) {
       return { success: false, message: "Invalid token", status: 401 };
     }
     const updatedUser = await User.findOneAndUpdate(
-      { authKey: authToken },
-      { authKey: "" },
+      { accessToken: authToken },
+      { accessToken: "" },
       { new: true }
     );
 
