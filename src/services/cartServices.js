@@ -1,28 +1,45 @@
 const { User, Course } = require("../models/schema");
 
+
+const mongoose = require('mongoose');
+
 const addItem = async (user, body) => {
-  try {
-    const course = await Course.findById(body.courseId).lean();
-    if (!course) {
-      return { success: false, message: "Course not found" };
-    }
-    console.log(user.cart);
+    try {
+      // Validate the courseId
+      if (!mongoose.Types.ObjectId.isValid(body.courseId)) {
+        return { success: false, message: "Invalid course ID" };
+      }
+      const courseId = new mongoose.Types.ObjectId(body.courseId);
+  
+      // Check if the course exists
+      const course = await Course.findById(courseId).lean();
+      if (!course) {
+        return { success: false, message: "Course not found" };
+      }
+  
+      // Check if the course is already in the cart
+      const courseExistsInCart = user.cart.some(
 
-    const courseExistsInCart = user.cart.some(
-      (item) => item.courseId && item.courseId.equals(body.courseId)
-    );
-    if (courseExistsInCart) {
-      return { success: false, message: "Course already in cart" };
-    }
-    user.cart.push({ courseId: body.courseId });
+        (item) => {
+            item.equals(courseId)}
+      );
+      if (courseExistsInCart) {
+        return { success: false, message: "Course already in cart" };
+      }
+  
+    user.cart.push(courseId );
     await User.updateOne({ _id: user._id }, { cart: user.cart });
-    return { success: true, message: "Course added to cart" };
-  } catch (error) {
-    console.log(error);
+    
+    // await user.save();
+  
+      return { success: true, message: "Course added to cart" };
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Failed to add course" };
+    }
+  };
+  
 
-    return { success: false, message: "Failed to add course" };
-  }
-};
 
 const removeItem = async (user, body) => {
   try {
@@ -53,13 +70,11 @@ const getCart = async (user) => {
       .populate({
         path: "cart",
         populate: {
-          path: "_id",
-          select: "title price avgRating createdBy",
-        },
+          path: "createdBy",
+          select: "username",
+        }
       })
       .lean();
-      console.log('ch');
-      
     return {
       success: true,
       message: "Cart fetched successfully",
@@ -67,7 +82,7 @@ const getCart = async (user) => {
     };
   } catch (error) {
     console.log(error);
-    
+
     return { success: false, message: "Failed to get cart" };
   }
 };
