@@ -104,6 +104,8 @@ exports.draftedCourses = async (req, res) => {
 
 exports.getCourseByCategory = async (req, res) => {
   try {
+    console.log(req.query.category);
+    
     const data = await courseByCategory(req.query.category);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
