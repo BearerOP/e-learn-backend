@@ -73,6 +73,8 @@ const getAllCourses = async (req, res) => {
 const getCourseById = async (courseId) => {
   try {
     // Find course by id and populate author
+    console.log(courseId);
+    
     const course = await Course.findOne({
       _id: courseId,
     })
@@ -372,11 +374,7 @@ const getMyCourses = async (user) => {
       { path: 'cart', model: 'Course' },
       { path: 'archivedCourses', model: 'Course' }
     ]);
-  
-  console.log(userCourses);
-  
     
-
     if (!userCourses) {
       return {
         status: 404,
