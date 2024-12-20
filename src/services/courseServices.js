@@ -367,11 +367,10 @@ const getMyCourses = async (user) => {
   try {
     // Find the user by their ID
     const userCourses = await User.findOne({ _id: user._id })
-    .select('purchasedCourses wishlist cart archivedCourses')
+    .select('purchasedCourses wishlist archivedCourses')
     .populate([
       { path: 'purchasedCourses', model: 'Course' },
       { path: 'wishlist', model: 'Course' },
-      { path: 'cart', model: 'Course' },
       { path: 'archivedCourses', model: 'Course' }
     ]);
     
@@ -398,38 +397,33 @@ const getMyCourses = async (user) => {
   }
 };
 
-const courseByCategory = async (category) => {
+const courseByCategory = async (query) => {
   try {
-    // Find courses by category
     const courses = await Course.find({
-      category,
+      $or: [
+      { title: { $regex: query, $options: "i" } },
+      { description: { $regex: query, $options: "i" } },
+      { category: { $regex: query, $options: "i" } },
+      { subCategory: { $regex: query, $options: "i" } },
+      { tags: { $regex: query, $options: "i" } },
+      ],
       status: "published",
-    });
-
-    if (!courses.length) {
-      return {
-        status: 404,
-        message: "No courses found",
-        success: false,
-      };
-    }
-
+    })
+    .populate("createdBy", "username email")
     return {
       status: 200,
-      message: "Courses retrieved successfully",
+      message: "Search results retrieved successfully",
       success: true,
-      data: courses,
+      data:  courses ,
     };
-
-  }
-  catch (error) {
+  } catch (error) {
     return {
       status: 500,
       message: error.message,
       success: false,
     };
   }
-}
+};
 
 
 module.exports = {

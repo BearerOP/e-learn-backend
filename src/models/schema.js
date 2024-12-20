@@ -44,6 +44,8 @@ const courseSchema = new Schema(
     price: { type: Number, required: true },
     thumbnail: { type: String },
     category: { type: String, required: true },
+    subCategory: { type: String }, // New subCategory field
+    tags: [{ type: String }], // New tags field
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the instructor
     tracks: [{ type: Schema.Types.ObjectId, ref: "Track" }], // Reference to tracks
     studentsEnrolled: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -64,6 +66,7 @@ const courseSchema = new Schema(
   },
   { timestamps: true }
 );
+
 const User = mongoose.model("User", userSchema);
 const Track = mongoose.model("Track", trackSchema);
 const Course = mongoose.model("Course", courseSchema);
