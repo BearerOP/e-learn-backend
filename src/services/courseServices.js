@@ -399,17 +399,21 @@ const getMyCourses = async (user) => {
 
 const courseByCategory = async (query) => {
   try {
-    const courses = await Course.find({
+    let courses;
+    if (query=='all') {
+      courses = await Course.find({ status: "published" }).populate("createdBy", "username email");
+    } else {
+      courses = await Course.find({
       $or: [
-      { title: { $regex: query, $options: "i" } },
-      { description: { $regex: query, $options: "i" } },
-      { category: { $regex: query, $options: "i" } },
-      { subCategory: { $regex: query, $options: "i" } },
-      { tags: { $regex: query, $options: "i" } },
+        { title: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+        { subCategory: { $regex: query, $options: "i" } },
+        { tags: { $regex: query, $options: "i" } },
       ],
       status: "published",
-    })
-    .populate("createdBy", "username email")
+      }).populate("createdBy", "username email");
+    }
     return {
       status: 200,
       message: "Search results retrieved successfully",
