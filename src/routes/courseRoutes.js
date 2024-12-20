@@ -26,7 +26,7 @@ router.get("/published", userAuth, publishedCourses);
 router.get("/drafted", userAuth, draftedCourses);
 router.get("/purchased", userAuth, getMyPurchasedCourses);
 router.post("/purchase/:id", userAuth, purchaseCourse); // Purchase course by id (added id param)
-router.get("/category",userAuth, getCourseByCategory); // Get course by id (added id param)
+router.get("/category", getCourseByCategory); // Get course by id (added id param)
 
 
 module.exports = router;
