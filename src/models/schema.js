@@ -30,6 +30,11 @@ const trackSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
+    type: {
+      type: String,
+      enum: ["folder", "video", "text"],
+      required: true,
+    },
     videoUrl: { type: String },
     content: { type: String }, // Optional textual content
     subTracks: [{ type: Schema.Types.ObjectId, ref: "Track" }], // Self-referencing for nested tracks
