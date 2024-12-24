@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BearerOP/gyan-sagar.git"
+    "url": "git+https://github.com/BearerOP/e-learn-backend.git"
   },
   "author": "bearerOP",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BearerOP/gyan-sagar/issues"
+    "url": "https://github.com/BearerOP/e-learn-backend/issues"
   },
-  "homepage": "https://github.com/BearerOP/gyan-sagar#readme",
+  "homepage": "https://github.com/BearerOP/e-learn-backend#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",

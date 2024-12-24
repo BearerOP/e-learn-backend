@@ -13,7 +13,6 @@ const userSchema = new Schema(
     },
     purchasedCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Course" }],
-    cart: [{ type: Schema.Types.ObjectId, ref: "Course" }],
     archivedCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }], // Courses archived by the user
     instructorDetails: {
       bio: { type: String },
@@ -72,8 +71,17 @@ const courseSchema = new Schema(
   { timestamps: true }
 );
 
+const cartSchema = new Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    cart: [{ type: Schema.Types.ObjectId, ref: "Course" }],
+  },
+  { timestamps: true }
+);
+
 const User = mongoose.model("User", userSchema);
 const Track = mongoose.model("Track", trackSchema);
 const Course = mongoose.model("Course", courseSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 
-module.exports = { Course, Track, User };
+module.exports = { Course, Track, User, Cart };

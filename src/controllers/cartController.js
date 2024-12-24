@@ -14,6 +14,7 @@ exports.removeItemController = async (req, res) => {
     const data = await removeItem(req.user, req.body);
     res.status(data.success ? 200 : 400).json(data);
   } catch (error) {
+    
     res.status(500).json({ message: "Failed to remove course" });
   }
 };
@@ -21,12 +22,9 @@ exports.removeItemController = async (req, res) => {
 exports.getCartController = async (req, res) => {
   try {
     const data = await getCart(req.user);
-    console.log(data);
-    
     res.status(data.success ? 200 : 400).json(data);
   } catch (error) {
     console.log(error);
-    
     res.status(500).json({ message: "Failed to get cart" });
   }
 };
