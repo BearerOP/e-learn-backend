@@ -1,12 +1,19 @@
 const { Course, User } = require("../models/schema");
 
-const addCourse = async (courseData, admin) => {
+const addCourse = async (courseData, instructor) => {
   try {
-    const { name, description, price, category, duration } = courseData;
-    const author = admin._id;
-
+    const {
+      title,
+      description,
+      price,
+      category,
+      subCategory,
+      thumbnail,
+      tags,
+    } = courseData;
+    const createdBy = instructor._id;
     // Check if a course with the same name by the same author already exists
-    const existingCourse = await Course.findOne({ name, author });
+    const existingCourse = await Course.findOne({ title, createdBy });
     if (existingCourse) {
       return {
         status: 400,
@@ -17,20 +24,16 @@ const addCourse = async (courseData, admin) => {
 
     // Create new course
     const newCourse = new Course({
-      name,
+      title,
       description,
       price,
       category,
-      author,
-      duration,
+      subCategory,
+      tags,
+      thumbnail,
+      createdBy,
     });
     await newCourse.save();
-
-    await User.findByIdAndUpdate(
-      author,
-      { $push: { myCourses: newCourse._id } },
-      { new: true }
-    );
 
     return { status: 201, message: "Course added successfully", success: true };
   } catch (error) {
@@ -74,10 +77,10 @@ const getCourseById = async (courseId) => {
   try {
     // Find course by id and populate author
     console.log(courseId);
-    
+
     const course = await Course.findOne({
       _id: courseId,
-    })
+    });
     if (!course) {
       return {
         status: 404,
@@ -95,7 +98,7 @@ const getCourseById = async (courseId) => {
   }
 };
 
-const editCourse = async (courseId, courseData, admin) => {
+const editCourse = async (courseId, courseData, instructor) => {
   try {
     // Find course by id
     const course = await Course.findOne({ _id: courseId });
@@ -106,8 +109,8 @@ const editCourse = async (courseId, courseData, admin) => {
         message: "Course not found",
       };
     }
-    // Check if the admin is the author of the course
-    const isAuthor = course.author.equals(admin._id); // Assuming admin has an _id property
+    // Check if the instructor is the author of the course
+    const isAuthor = course.author.equals(instructor._id); // Assuming instructor has an _id property
 
     if (!isAuthor) {
       return {
@@ -145,7 +148,7 @@ const editCourse = async (courseId, courseData, admin) => {
   }
 };
 
-const deleteCourse = async (courseId, admin) => {
+const deleteCourse = async (courseId, instructor) => {
   try {
     // Find course by id
     const course = await Course.findOne({ _id: courseId });
@@ -157,8 +160,8 @@ const deleteCourse = async (courseId, admin) => {
       };
     }
 
-    // Check if the admin is the author of the course
-    const isAuthor = course.author.equals(admin._id); // Assuming admin has an _id property
+    // Check if the instructor is the author of the course
+    const isAuthor = course.author.equals(instructor._id); // Assuming instructor has an _id property
     if (!isAuthor) {
       return {
         status: 403,
@@ -197,11 +200,10 @@ const deleteCourse = async (courseId, admin) => {
   }
 };
 
-
-const publishedCourses = async (admin) => {
+const publishedCourses = async (instructor) => {
   try {
     // Find the user by their ID and populate the myCourses field with only the published courses
-    const user = await User.findOne({ _id: admin._id }).populate({
+    const user = await User.findOne({ _id: instructor._id }).populate({
       path: "myCourses", // Assuming myCourses contains course IDs
       match: { status: "published" }, // Only populate courses with the 'published' status
       select: "name category status", // Specify the fields to populate
@@ -229,10 +231,10 @@ const publishedCourses = async (admin) => {
   }
 };
 
-const draftedCourses = async (admin) => {
+const draftedCourses = async (instructor) => {
   try {
     // Find the user by their ID and populate the myCourses field with only the published courses
-    const user = await User.findOne({ _id: admin._id }).populate({
+    const user = await User.findOne({ _id: instructor._id }).populate({
       path: "myCourses", // Assuming myCourses contains course IDs
       match: { status: "draft" }, // Only populate courses with the 'draft' status
       select: "name category status", // Specify the fields to populate
@@ -367,13 +369,13 @@ const getMyCourses = async (user) => {
   try {
     // Find the user by their ID
     const userCourses = await User.findOne({ _id: user._id })
-    .select('purchasedCourses wishlist archivedCourses')
-    .populate([
-      { path: 'purchasedCourses', model: 'Course' },
-      { path: 'wishlist', model: 'Course' },
-      { path: 'archivedCourses', model: 'Course' }
-    ]);
-    
+      .select("purchasedCourses wishlist archivedCourses")
+      .populate([
+        { path: "purchasedCourses", model: "Course" },
+        { path: "wishlist", model: "Course" },
+        { path: "archivedCourses", model: "Course" },
+      ]);
+
     if (!userCourses) {
       return {
         status: 404,
@@ -400,25 +402,28 @@ const getMyCourses = async (user) => {
 const courseByCategory = async (query) => {
   try {
     let courses;
-    if (query=='all') {
-      courses = await Course.find({ status: "published" }).populate("createdBy", "username email");
+    if (query == "all") {
+      courses = await Course.find({ status: "published" }).populate(
+        "createdBy",
+        "username email"
+      );
     } else {
       courses = await Course.find({
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
-        { subCategory: { $regex: query, $options: "i" } },
-        { tags: { $regex: query, $options: "i" } },
-      ],
-      status: "published",
+        $or: [
+          { title: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+          { category: { $regex: query, $options: "i" } },
+          { subCategory: { $regex: query, $options: "i" } },
+          { tags: { $regex: query, $options: "i" } },
+        ],
+        status: "published",
       }).populate("createdBy", "username email");
     }
     return {
       status: 200,
       message: "Search results retrieved successfully",
       success: true,
-      data:  courses ,
+      data: courses,
     };
   } catch (error) {
     return {
@@ -428,7 +433,6 @@ const courseByCategory = async (query) => {
     };
   }
 };
-
 
 module.exports = {
   addCourse,
@@ -441,6 +445,5 @@ module.exports = {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
-  courseByCategory
+  courseByCategory,
 };
-
