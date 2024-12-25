@@ -22,7 +22,7 @@ router.get("/get", getCourseById); // Get course by id (fixing param)
 router.put("/edit/:id", userAuth, editCourse); // Update course by id (changed to PUT and added id param)
 router.delete("/delete/:id", userAuth, deleteCourse); // Delete course by id (changed to DELETE and added id param)
 router.get("/my", userAuth, getMyCourses); // Get my courses
-router.get("/published", userAuth, publishedCourses);
+router.get("/instructor", userAuth, publishedCourses);
 router.get("/drafted", userAuth, draftedCourses);
 router.get("/purchased", userAuth, getMyPurchasedCourses);
 router.post("/purchase/:id", userAuth, purchaseCourse); // Purchase course by id (added id param)

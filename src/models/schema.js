@@ -17,7 +17,6 @@ const userSchema = new Schema(
     instructorDetails: {
       bio: { type: String },
       expertise: [{ type: String }],
-      publishedCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }], // Instructor's published courses
     },
     accessToken: { type: String }, // Access token for authentication
     refreshToken: { type: String }, // Refresh token for renewing access

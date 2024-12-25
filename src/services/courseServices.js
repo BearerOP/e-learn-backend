@@ -202,25 +202,20 @@ const deleteCourse = async (courseId, instructor) => {
 
 const publishedCourses = async (instructor) => {
   try {
-    // Find the user by their ID and populate the myCourses field with only the published courses
-    const user = await User.findOne({ _id: instructor._id }).populate({
-      path: "myCourses", // Assuming myCourses contains course IDs
-      match: { status: "published" }, // Only populate courses with the 'published' status
-      select: "name category status", // Specify the fields to populate
-    });
+    // Find all courses created by the instructor
+    const courses = await Course.find({ createdBy: instructor._id });
 
-    if (!user || !user.myCourses.length) {
+    if (!courses || !courses.length) {
       return {
         status: 404,
         success: false,
-        message: "No published courses found",
+        message: "No course uploaded yet!",
       };
     }
-
     return {
       status: 200,
       success: true,
-      data: user.myCourses,
+      data: courses,
     };
   } catch (error) {
     return {
