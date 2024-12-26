@@ -203,7 +203,11 @@ const deleteCourse = async (courseId, instructor) => {
 const publishedCourses = async (instructor) => {
   try {
     // Find all courses created by the instructor
-    const courses = await Course.find({ createdBy: instructor._id });
+    const courses = await Course.find({ createdBy: instructor._id }).populate({
+      path: 'tracks',
+      model: 'Track',
+      select: 'title description type videoUrl content subTracks',
+    });
 
     if (!courses || !courses.length) {
       return {
