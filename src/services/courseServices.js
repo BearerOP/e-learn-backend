@@ -1,4 +1,4 @@
-const { Course, User } = require("../models/schema");
+const { Course, User, Track } = require("../models/schema");
 
 const addCourse = async (courseData, instructor) => {
   try {
@@ -433,6 +433,63 @@ const courseByCategory = async (query) => {
   }
 };
 
+const addTrack = async (instructor, courseId, trackData) => {
+  try {
+    const course = await Course.findOne({ _id: courseId, createdBy: instructor._id });
+    if (!course) {
+      return {
+        status: 404,
+        message: "Course not found",
+        success: false,
+      };
+    }
+
+    // Check if a track with the same title and videoUrl already exists in the course
+    const existingTrack = await Track.findOne({ title: trackData.title, videoUrl: trackData.videoUrl });
+    if (existingTrack) {
+      return {
+        status: 400,
+        message: "Track with the same title and videoUrl already exists",
+        success: false,
+      };
+    }
+
+    const newTrack = {
+      title: trackData.title,
+      description: trackData.description,
+      type: trackData.type,
+      videoUrl: trackData.videoUrl,
+      content: trackData.content,
+      subTracks: trackData.subTracks,
+    };
+    const session = await Course.startSession();
+    session.startTransaction();
+    try {
+      const track = await Track.create([newTrack], { session });
+      course.tracks.push(track[0]._id);
+      await course.save({ session });
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+
+    return {
+      status: 201,
+      message: `Track added successfully to the ${course.title} course`,
+      success: true,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
+
 module.exports = {
   addCourse,
   getAllCourses,
@@ -445,4 +502,5 @@ module.exports = {
   publishedCourses,
   draftedCourses,
   courseByCategory,
+  addTrack
 };

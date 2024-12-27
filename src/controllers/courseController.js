@@ -9,7 +9,8 @@ const {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
-  courseByCategory
+  courseByCategory,
+  addTrack,
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -108,5 +109,13 @@ exports.getCourseByCategory = async (req, res) => {
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get courses by category" });
+  }
+};
+exports.addTrack = async (req, res) => {
+  try {
+    const data = await addTrack(req.user,req.body.courseId,req.body.trackData);
+    res.status(data.success ? 200 : 404).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add track in the course" });
   }
 };
