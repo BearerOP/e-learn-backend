@@ -11,7 +11,8 @@ const {
   draftedCourses,
   courseByCategory,
   addTrack,
-  getCourseContent
+  getCourseContent,
+  getTrackContent
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -129,3 +130,12 @@ exports.getCourseContent = async (req, res) => {
     res.status(500).json({ message: "Failed to get course content" });
   }
 };
+
+exports.getTrackContent = async (req, res) => {
+  try {
+    const data = await getTrackContent(req.query.trackId);
+    res.status(data.success ? 200 : 404).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get track content" });
+  }
+}

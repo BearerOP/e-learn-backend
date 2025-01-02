@@ -528,6 +528,38 @@ const getCourseContent = async (courseId) => {
   }
 };
 
+const getTrackContent = async (trackId) => {
+  try {
+    const track = await Track.findOne({ _id: trackId }).populate({
+      path: "subTracks",
+      model: "Track",
+      select: "_id title description type videoUrl content subTracks",
+    });
+
+    if (!track) {
+      return {
+        status: 404,
+        message: "Track not found",
+        success: false,
+      };
+    }
+
+    return {
+      status: 200,
+      message: "Track content retrieved successfully",
+      success: true,
+      data: track.subTracks,
+      trackTitle: track.title,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
+
 module.exports = {
   addCourse,
   getAllCourses,
@@ -542,4 +574,5 @@ module.exports = {
   courseByCategory,
   addTrack,
   getCourseContent,
+  getTrackContent,
 };
