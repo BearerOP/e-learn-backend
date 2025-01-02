@@ -1,3 +1,4 @@
+const { get } = require("mongoose");
 const { Course, User, Track } = require("../models/schema");
 
 const addCourse = async (courseData, instructor) => {
@@ -204,9 +205,9 @@ const publishedCourses = async (instructor) => {
   try {
     // Find all courses created by the instructor
     const courses = await Course.find({ createdBy: instructor._id }).populate({
-      path: 'tracks',
-      model: 'Track',
-      select: 'title description type videoUrl content subTracks',
+      path: "tracks",
+      model: "Track",
+      select: "title description type videoUrl content subTracks",
     });
 
     if (!courses || !courses.length) {
@@ -435,7 +436,10 @@ const courseByCategory = async (query) => {
 
 const addTrack = async (instructor, courseId, trackData) => {
   try {
-    const course = await Course.findOne({ _id: courseId, createdBy: instructor._id });
+    const course = await Course.findOne({
+      _id: courseId,
+      createdBy: instructor._id,
+    });
     if (!course) {
       return {
         status: 404,
@@ -445,7 +449,10 @@ const addTrack = async (instructor, courseId, trackData) => {
     }
 
     // Check if a track with the same title and videoUrl already exists in the course
-    const existingTrack = await Track.findOne({ title: trackData.title, videoUrl: trackData.videoUrl });
+    const existingTrack = await Track.findOne({
+      title: trackData.title,
+      videoUrl: trackData.videoUrl,
+    });
     if (existingTrack) {
       return {
         status: 400,
@@ -490,6 +497,37 @@ const addTrack = async (instructor, courseId, trackData) => {
   }
 };
 
+const getCourseContent = async (courseId) => {
+  try {
+    const course = await Course.findOne({ _id: courseId }).populate({
+      path: "tracks",
+      model: "Track",
+      select: "_id title description type videoUrl content subTracks",
+    });
+    if (!course) {
+      return {
+        status: 404,
+        message: "Course not found",
+        success: false,
+      };
+    }
+
+    return {
+      status: 200,
+      message: "Course content retrieved successfully",
+      success: true,
+      data: course.tracks,
+      courseTitle: course.title,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error.message,
+      success: false,
+    };
+  }
+};
+
 module.exports = {
   addCourse,
   getAllCourses,
@@ -502,5 +540,6 @@ module.exports = {
   publishedCourses,
   draftedCourses,
   courseByCategory,
-  addTrack
+  addTrack,
+  getCourseContent,
 };
