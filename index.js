@@ -45,6 +45,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/user', require('./src/routes/userRoutes'));
 app.use('/api/v1/course', require('./src/routes/courseRoutes'));
 app.use('/api/v1/cart', require('./src/routes/cartRoutes'));
+app.use('/api/v1/order', require('./src/routes/orderRoutes'));
 
 connectDB();
 
