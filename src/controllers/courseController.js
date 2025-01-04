@@ -62,7 +62,7 @@ exports.deleteCourse = async (req, res) => {
 
 exports.purchaseCourse = async (req, res) => {
   try {
-    const data = await purchaseCourse(req.params.id, req.user); // Pass req.user instead of req.body
+    const data = await purchaseCourse(req.body.items, req.user); // Pass req.user instead of req.body
     res.status(data.success ? 200 : 400).json(data); // Changed to 400
   } catch (error) {
     res.status(500).json({ message: "Failed to purchase course" });

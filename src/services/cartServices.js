@@ -4,6 +4,16 @@ const addItem = async (user, body) => {
   try {
     const { courseId } = body;
 
+    // Check if the user has already purchased the course
+    const userDoc = await User.findById(user._id).populate('purchasedCourses');
+    const coursePurchased = userDoc.purchasedCourses.some(
+      (course) => course._id.toString() === courseId
+    );
+
+    if (coursePurchased) {
+      return { success: false, message: "Course already purchased", status: 400 };
+    }
+
     const cartDoc = await Cart.findOne({ userId: user._id });
 
     if (!cartDoc) {
@@ -20,7 +30,7 @@ const addItem = async (user, body) => {
     );
 
     if (courseExistsInCart) {
-      return { success: false, message: "Course is already added to cart" };
+      return { success: false, message: "Course is already added to cart", status: 400 };
     }
     cartDoc.cart.push(courseId);
     await cartDoc.save();

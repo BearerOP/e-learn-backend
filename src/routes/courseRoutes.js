@@ -28,7 +28,7 @@ router.get("/my", userAuth, getMyCourses); // Get my courses
 router.get("/instructor", userAuth, publishedCourses);
 router.get("/drafted", userAuth, draftedCourses);
 router.get("/purchased", userAuth, getMyPurchasedCourses);
-router.post("/purchase/:id", userAuth, purchaseCourse); // Purchase course by id (added id param)
+router.post("/purchase", userAuth, purchaseCourse); // Purchase course by id (added id param)
 router.get("/category", getCourseByCategory); // Get course by id (added id param)
 router.post("/add/track", userAuth, addTrack); // Add track to course (added id param)
 router.get("/content",userAuth, getCourseContent);

@@ -1,5 +1,5 @@
 const { get } = require("mongoose");
-const { Course, User, Track } = require("../models/schema");
+const { Course, User, Track, Cart } = require("../models/schema");
 
 const addCourse = async (courseData, instructor) => {
   try {
@@ -262,28 +262,10 @@ const draftedCourses = async (instructor) => {
   }
 };
 
-const purchaseCourse = async (courseId, user) => {
+const purchaseCourse = async (items, user) => {
   try {
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return {
-        status: 404,
-        message: "Course not found",
-        success: false,
-      };
-    }
-    console.log(course);
-
-    // Check if the course is published
-    if (course.status !== "published") {
-      return {
-        status: 400,
-        message: "Cannot purchase an unpublished course",
-        success: false,
-      };
-    }
-
-    const userCourse = await User.findOne({ _id: user._id });
+    // Find the user
+    const userCourse = await User.findById(user._id);
     if (!userCourse) {
       return {
         status: 404,
@@ -292,36 +274,48 @@ const purchaseCourse = async (courseId, user) => {
       };
     }
 
-    const courseInUserCourses = userCourse.purchasedCourses.find(
-      (courseId) => courseId.toString() === course._id.toString()
-    );
-    if (courseInUserCourses) {
+    // Validate courses and check if they can be purchased
+    for (const item of items) {
+      const courseAlreadyPurchased = userCourse.purchasedCourses.some(
+        (courseId) => courseId.toString() === item.toString()
+      );
+
+      if (courseAlreadyPurchased) {
+        return {
+          status: 400,
+          message: `Course already purchased: ${item}`,
+          success: false,
+        };
+      }
+
+      // Add the course to the user's purchased courses
+      userCourse.purchasedCourses.push(item);
+    }
+
+    // Find and update the user's cart
+    const userCart = await Cart.findOne({ userId: user._id });
+    if (!userCart) {
       return {
-        status: 400,
-        message: "Course already purchased",
+        status: 404,
+        message: "Cart not found for user",
         success: false,
       };
     }
+    // Remove purchased items from the cart
+    userCart.cart = userCart.cart.filter(
+      (courseId) => !items.includes(courseId.toString())
+    );
+    await userCourse.save();
 
-    // Optionally, check if the user has sufficient funds
-    // if (user.balance < course.price) {
-    //   return {
-    //     status: 400,
-    //     message: "Insufficient funds",
-    //     success: false,
-    //   };
-    // }
-
-    userCourse.purchasedCourses.push(course._id);
-    const savedCourse = await userCourse.save();
-    console.log(userCourse);
+    await userCart.save();
 
     return {
       status: 200,
-      message: "Course purchased successfully",
+      message: "Courses purchased successfully",
       success: true,
     };
   } catch (error) {
+    console.error("Error in purchaseCourse:", error);
     return {
       status: 500,
       message: error.message,
