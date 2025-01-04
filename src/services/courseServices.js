@@ -277,19 +277,17 @@ const purchaseCourse = async (items, user) => {
     // Validate courses and check if they can be purchased
     for (const item of items) {
       const courseAlreadyPurchased = userCourse.purchasedCourses.some(
-        (courseId) => courseId.toString() === item.toString()
+        (courseId) => courseId.toString() === item._id.toString()
       );
-
       if (courseAlreadyPurchased) {
         return {
           status: 400,
-          message: `Course already purchased: ${item}`,
+          message: `Course already purchased: ${item.title}`,
           success: false,
         };
       }
-
       // Add the course to the user's purchased courses
-      userCourse.purchasedCourses.push(item);
+      userCourse.purchasedCourses.push(item._id);
     }
 
     // Find and update the user's cart
@@ -303,10 +301,9 @@ const purchaseCourse = async (items, user) => {
     }
     // Remove purchased items from the cart
     userCart.cart = userCart.cart.filter(
-      (courseId) => !items.includes(courseId.toString())
+      (courseId) => !items.some(item => item._id.toString() === courseId.toString())
     );
     await userCourse.save();
-
     await userCart.save();
 
     return {
