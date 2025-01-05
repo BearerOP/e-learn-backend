@@ -2,119 +2,172 @@ const { User } = require("../models/schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const loginOrRegister = async (req, res) => {
-  try {
-    const { username, email, password, avatar, provider, providerId, role } =
-      req.body;
+// const loginOrRegister = async (req, res) => {
+//   try {
+//     const { username, email, password, avatar, provider, providerId, role } =
+//       req.body;
 
-    // Check if the user already exists
-    let existingUser = await User.findOne({ email }).lean();
+//     // Check if the user already exists
+//     let existingUser = await User.findOne({ email }).lean();
+
+//     if (existingUser) {
+//       // User exists, proceed with login flow
+//       // Generate a JWT token
+
+//       const isPasswordValid = await bcrypt.compare(
+//         password,
+//         existingUser.password
+//       );
+
+//       if (!isPasswordValid) {
+//         return {
+//           success: false,
+//           message: "Invalid email or password",
+//           status: 401,
+//         };
+//       }
+
+//       const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY);
+//       if (!token) {
+//         return {
+//           success: false,
+//           message: "Token generation failed",
+//           status: 500,
+//         };
+//       }
+
+//       // Update user's accessToken with the token
+//       const updatedUser = await User.findOneAndUpdate(
+//         { _id: existingUser._id },
+//         { accessToken: token },
+//         { new: true }
+//       );
+
+//       // Set the token in a cookie
+//       res.cookie("token", token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production",
+//         maxAge: 60 * 60 * 1000, // 1 hour expiration
+//       });
+
+//       return {
+//         success: true,
+//         message: "User logged in successfully",
+//         token,
+//         role: updatedUser.role,
+//         status: 200,
+//         user: {
+//           username: updatedUser.username,
+//           email: updatedUser.email,
+//           avatar: updatedUser.avatar,
+//           role: updatedUser.role,
+//           token: token,
+//         },
+//       };
+//     } else {
+//       // User does not exist, proceed with registration flow
+
+//       // Create a new user
+//       const newUser = new User({
+//         username,
+//         email,
+//         avatar,
+//         provider,
+//         providerId,
+//         role: role || "user", // Default role if not provided
+//       });
+
+//       await newUser.save();
+
+//       // Generate a JWT token for the newly registered user
+//       const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY);
+
+//       // Set the token in a cookie
+//       res.cookie("token", token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production",
+//         maxAge: 60 * 60 * 1000,
+//       });
+
+//       // Store token in the new user's accessToken
+//       await User.findOneAndUpdate(
+//         { _id: newUser._id },
+//         { accessToken: token },
+//         { new: true }
+//       );
+
+//       return {
+//         success: true,
+//         message: "User registered successfully",
+//         token,
+//         role: newUser.role,
+//         status: 201,
+//         user: {
+//           username: newUser.username,
+//           email: newUser.email,
+//           avatar: newUser.avatar,
+//           role: newUser.role,
+//           token: token,
+//         },
+//       };
+//     }
+//   } catch (error) {
+//     return {
+//       success: false,
+//       message: error.message || "Internal server error",
+//       status: 500,
+//     };
+//   }
+// };
+
+const register = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      // User exists, proceed with login flow
-      // Generate a JWT token
-
-      const isPasswordValid = await bcrypt.compare(
-        password,
-        existingUser.password
-      );
-
-      if (!isPasswordValid) {
-        return {
-          success: false,
-          message: "Invalid email or password",
-          status: 401,
-        };
-      }
-
-      const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY);
-      if (!token) {
-        return {
-          success: false,
-          message: "Token generation failed",
-          status: 500,
-        };
-      }
-
-      // Update user's accessToken with the token
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: existingUser._id },
-        { accessToken: token },
-        { new: true }
-      );
-
-      // Set the token in a cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 1000, // 1 hour expiration
-      });
-
       return {
-        success: true,
-        message: "User logged in successfully",
-        token,
-        role: updatedUser.role,
-        status: 200,
-        user: {
-          username: updatedUser.username,
-          email: updatedUser.email,
-          avatar: updatedUser.avatar,
-          role: updatedUser.role,
-          token: token,
-        },
-      };
-    } else {
-      // User does not exist, proceed with registration flow
-
-      // Create a new user
-      const newUser = new User({
-        username,
-        email,
-        avatar,
-        provider,
-        providerId,
-        role: role || "user", // Default role if not provided
-      });
-
-      await newUser.save();
-
-      // Generate a JWT token for the newly registered user
-      const token = jwt.sign({ id: newUser._id }, process.env.SECRET_KEY);
-
-      // Set the token in a cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 1000,
-      });
-
-      // Store token in the new user's accessToken
-      await User.findOneAndUpdate(
-        { _id: newUser._id },
-        { accessToken: token },
-        { new: true }
-      );
-
-      return {
-        success: true,
-        message: "User registered successfully",
-        token,
-        role: newUser.role,
-        status: 201,
-        user: {
-          username: newUser.username,
-          email: newUser.email,
-          avatar: newUser.avatar,
-          role: newUser.role,
-          token: token,
-        },
+        success: false,
+        message: "User already exists",
+        status: 400,
       };
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    if (!hashedPassword) {
+      return {
+        success: false,
+        message: "Password hashing failed",
+        status: 500,
+      };
+    }
+
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    const savedUser = await newUser.save();
+
+    if (!savedUser) {
+      return {
+        success: false,
+        message: "User registration failed",
+        status: 500,
+      };
+    }
+
+    return {
+      message: "User registered successfully",
+      success: true,
+      status: 201,
+    };
   } catch (error) {
     return {
-      success: false,
       message: error.message || "Internal server error",
+      success: false,
       status: 500,
     };
   }
@@ -123,9 +176,7 @@ const loginOrRegister = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
-
-    const existingUser = await User.findOne({ email }).lean();
+    const existingUser = await User.findOne({ email:email });
     if (!existingUser) {
       return {
         success: false,
@@ -269,8 +320,8 @@ const profile = async (req, res) => {
 
 module.exports = {
   login,
-  // register,
-  loginOrRegister,
+  register,
+  // loginOrRegister,
   logout,
   profile,
 };
