@@ -34,7 +34,7 @@ const getInstructorDashboard = async (req, res) => {
       success: true,
       status: 200,
       message: "Course added to cart",
-      coursesCount,
+      publishedCourses: coursesCount,
       totalStudents,
       totalEarnings,
     };
