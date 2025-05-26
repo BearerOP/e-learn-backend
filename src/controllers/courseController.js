@@ -182,7 +182,7 @@ module.exports = {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
-  getCourseByCategory,
+  courseByCategory,
   addTrack,
   getCourseContent,
   getTrackContent,

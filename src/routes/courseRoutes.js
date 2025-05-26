@@ -13,11 +13,11 @@ const {
   getMyPurchasedCourses,
   publishedCourses,
   draftedCourses,
-  getCourseByCategory,
+  courseByCategory,
   addTrack,
   getCourseContent,
   getTrackContent,
-  updateCourseStatus
+  updateCourseStatus,
 } = require("../controllers/courseController");
 
 router.post("/add", userAuth, addCourse); // Add course
@@ -30,7 +30,7 @@ router.get("/instructor", userAuth, publishedCourses);
 router.get("/drafted", userAuth, draftedCourses);
 router.get("/purchased", userAuth, getMyPurchasedCourses);
 router.post("/purchase", userAuth, purchaseCourse); // Purchase course by id (added id param)
-router.get("/category", getCourseByCategory); // Get course by id (added id param)
+router.get("/category", courseByCategory); // Get course by id (added id param)
 router.post("/add/track", userAuth, addTrack); // Add track to course (added id param)
 router.get("/content",userAuth, getCourseContent);
 router.get("/content/track",userAuth, getTrackContent);
