@@ -27,7 +27,7 @@ exports.addCourse = async (req, res) => {
 
 exports.getAllCourses = async (req, res) => {
   try {
-    const data = await getAllCourses(req,res);
+    const data = await getAllCourses(req.query);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get all courses" });
@@ -106,7 +106,7 @@ exports.draftedCourses = async (req, res) => {
   }
 };
 
-exports.getCourseByCategory = async (req, res) => {
+exports.courseByCategory = async (req, res) => {
   try {
     const data = await courseByCategory(req.query.category);
     res.status(data.success ? 200 : 404).json(data);

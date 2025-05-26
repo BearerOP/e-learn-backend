@@ -45,15 +45,17 @@ const addCourse = async (courseData, instructor) => {
     };
   }
 };
-const getAllCourses = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+const getAllCourses = async (query) => {
+  const { page = 1, limit = 10 } = query;
+  console.log("hihi");
+  
 
   try {
     // Fetch only published courses with pagination
     const courses = await Course.find({ status: "published" })
       .populate("createdBy", "username email")
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(parseInt(limit));
 
     const totalCourses = await Course.countDocuments({ status: "published" });
 
@@ -62,7 +64,7 @@ const getAllCourses = async (req, res) => {
       success: true,
       data: courses,
       totalCourses,
-      currentPage: page,
+      currentPage: parseInt(page),
       totalPages: Math.ceil(totalCourses / limit),
     };
   } catch (error) {
