@@ -288,6 +288,9 @@ const purchaseCourse = async (items, user) => {
       }
       // Add the course to the user's purchased courses
       userCourse.purchasedCourses.push(item._id);
+      const course = await Course.findById(item._id);
+      course.studentsEnrolled.push(user._id);
+      await course.save();
     }
 
     // Find and update the user's cart
