@@ -45,17 +45,15 @@ const addCourse = async (courseData, instructor) => {
     };
   }
 };
-const getAllCourses = async (query) => {
-  const { page = 1, limit = 10 } = query;
-  console.log("hihi");
-  
+const getAllCourses = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
 
   try {
     // Fetch only published courses with pagination
     const courses = await Course.find({ status: "published" })
       .populate("createdBy", "username email")
       .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .limit(limit);
 
     const totalCourses = await Course.countDocuments({ status: "published" });
 
@@ -64,7 +62,7 @@ const getAllCourses = async (query) => {
       success: true,
       data: courses,
       totalCourses,
-      currentPage: parseInt(page),
+      currentPage: page,
       totalPages: Math.ceil(totalCourses / limit),
     };
   } catch (error) {
@@ -556,40 +554,43 @@ const getTrackContent = async (trackId) => {
   }
 };
 
-const updateCourseStatus = async (courseId, status, instructor) => {
+const updateCourseStatus = async (courseId, status, user) => {
   try {
+    // Find the course
+    console.log("courseId", courseId);
+    console.log("status", status);
+    console.log("user", user);
+    
     const course = await Course.findOne({ _id: courseId });
+    
     if (!course) {
       return {
-        status: 404,
         success: false,
-        message: "Course not found",
+        message: "Course not found"
       };
     }
 
-    // Check if the instructor is the author of the course
-    if (!course.createdBy.equals(instructor._id)) {
+    // Check if the user is the course creator
+    if (course.createdBy.toString() !== user._id.toString()) {
       return {
-        status: 403,
         success: false,
-        message: "You are not authorized to update this course",
+        message: "You are not authorized to update this course's status"
       };
     }
 
-    // Update course status
+    // Update the course status
     course.status = status;
     await course.save();
 
     return {
-      status: 200,
       success: true,
-      message: "Course status updated successfully",
+      message: `Course status updated to ${status} successfully`,
+      data: course
     };
   } catch (error) {
     return {
-      status: 500,
       success: false,
-      message: error.message,
+      message: error.message
     };
   }
 };
@@ -609,5 +610,5 @@ module.exports = {
   addTrack,
   getCourseContent,
   getTrackContent,
-  updateCourseStatus,
+  updateCourseStatus
 };

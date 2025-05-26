@@ -27,7 +27,7 @@ exports.addCourse = async (req, res) => {
 
 exports.getAllCourses = async (req, res) => {
   try {
-    const data = await getAllCourses(req.query);
+    const data = await getAllCourses(req,res);
     res.status(data.success ? 200 : 404).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to get all courses" });
@@ -106,7 +106,7 @@ exports.draftedCourses = async (req, res) => {
   }
 };
 
-exports.courseByCategory = async (req, res) => {
+exports.getCourseByCategory = async (req, res) => {
   try {
     const data = await courseByCategory(req.query.category);
     res.status(data.success ? 200 : 404).json(data);
@@ -114,7 +114,6 @@ exports.courseByCategory = async (req, res) => {
     res.status(500).json({ message: "Failed to get courses by category" });
   }
 };
-
 exports.addTrack = async (req, res) => {
   try {
     const data = await addTrack(req.user,req.body.courseId,req.body.trackData);
@@ -150,41 +149,23 @@ exports.updateCourseStatus = async (req, res) => {
     if (!courseId || !status) {
       return res.status(400).json({
         success: false,
-        message: "Course ID and status are required",
+        message: "Course ID and status are required"
       });
     }
 
     if (!['published', 'draft'].includes(status)) {
       return res.status(400).json({
         success: false,
-        message: "Status must be either 'published' or 'draft'",
+        message: "Status must be either 'published' or 'draft'"
       });
     }
 
     const data = await updateCourseStatus(courseId, status, req.user);
-    res.status(data.status).json(data);
+    res.status(data.success ? 200 : 400).json(data);
   } catch (error) {
     res.status(500).json({ 
-      success: false, 
+      success: false,
       message: "Failed to update course status" 
     });
   }
-};
-
-module.exports = {
-  addCourse,
-  getAllCourses,
-  getCourseById,
-  editCourse,
-  deleteCourse,
-  getMyCourses,
-  purchaseCourse,
-  getMyPurchasedCourses,
-  publishedCourses,
-  draftedCourses,
-  courseByCategory,
-  addTrack,
-  getCourseContent,
-  getTrackContent,
-  updateCourseStatus,
 };
