@@ -554,6 +554,44 @@ const getTrackContent = async (trackId) => {
   }
 };
 
+const updateCourseStatus = async (courseId, status, instructor) => {
+  try {
+    const course = await Course.findOne({ _id: courseId });
+    if (!course) {
+      return {
+        status: 404,
+        success: false,
+        message: "Course not found",
+      };
+    }
+
+    // Check if the instructor is the author of the course
+    if (!course.createdBy.equals(instructor._id)) {
+      return {
+        status: 403,
+        success: false,
+        message: "You are not authorized to update this course",
+      };
+    }
+
+    // Update course status
+    course.status = status;
+    await course.save();
+
+    return {
+      status: 200,
+      success: true,
+      message: "Course status updated successfully",
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
 module.exports = {
   addCourse,
   getAllCourses,
@@ -569,4 +607,5 @@ module.exports = {
   addTrack,
   getCourseContent,
   getTrackContent,
+  updateCourseStatus,
 };

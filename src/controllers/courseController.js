@@ -12,7 +12,8 @@ const {
   courseByCategory,
   addTrack,
   getCourseContent,
-  getTrackContent
+  getTrackContent,
+  updateCourseStatus
 } = require("../services/courseServices");
 
 exports.addCourse = async (req, res) => {
@@ -113,6 +114,7 @@ exports.getCourseByCategory = async (req, res) => {
     res.status(500).json({ message: "Failed to get courses by category" });
   }
 };
+
 exports.addTrack = async (req, res) => {
   try {
     const data = await addTrack(req.user,req.body.courseId,req.body.trackData);
@@ -139,3 +141,50 @@ exports.getTrackContent = async (req, res) => {
     res.status(500).json({ message: "Failed to get track content" });
   }
 }
+
+exports.updateCourseStatus = async (req, res) => {
+  try {
+    const { courseId } = req.query;
+    const { status } = req.body;
+    
+    if (!courseId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "Course ID and status are required",
+      });
+    }
+
+    if (!['published', 'draft'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Status must be either 'published' or 'draft'",
+      });
+    }
+
+    const data = await updateCourseStatus(courseId, status, req.user);
+    res.status(data.status).json(data);
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to update course status" 
+    });
+  }
+};
+
+module.exports = {
+  addCourse,
+  getAllCourses,
+  getCourseById,
+  editCourse,
+  deleteCourse,
+  getMyCourses,
+  purchaseCourse,
+  getMyPurchasedCourses,
+  publishedCourses,
+  draftedCourses,
+  getCourseByCategory,
+  addTrack,
+  getCourseContent,
+  getTrackContent,
+  updateCourseStatus,
+};

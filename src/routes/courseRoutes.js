@@ -16,7 +16,8 @@ const {
   getCourseByCategory,
   addTrack,
   getCourseContent,
-  getTrackContent
+  getTrackContent,
+  updateCourseStatus
 } = require("../controllers/courseController");
 
 router.post("/add", userAuth, addCourse); // Add course
@@ -33,5 +34,6 @@ router.get("/category", getCourseByCategory); // Get course by id (added id para
 router.post("/add/track", userAuth, addTrack); // Add track to course (added id param)
 router.get("/content",userAuth, getCourseContent);
 router.get("/content/track",userAuth, getTrackContent);
+router.patch("/status", userAuth, updateCourseStatus);
 
 module.exports = router;
