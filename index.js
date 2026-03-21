@@ -14,9 +14,15 @@ app.use(bodyParser.json());
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
   "https://gyansagar-client.vercel.app",
-  'https://e-learn-blush.vercel.app',
+  "https://e-learn-blush.vercel.app",
   "https://gyansagar.bearerop.live",
+  "https://ourcodeit.com",
+  "https://www.ourcodeit.com",
+  "https://api.ourcodeit.com",
 ];
 
 const corsOptions = {
