@@ -46,7 +46,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions))
 
 app.get('/', (req, res) => {
-  res.send('Gyan-Sagar Backend is up. 😊');
+  res.send('CodeIT Backend is up. 😊');
 });
 
 app.use('/api/v1/user', require('./src/routes/userRoutes'));

@@ -1,6 +1,6 @@
-# GyanSagar
+# CodeIT
 
-GyanSagar is a course-selling web platform where users can browse and purchase educational courses, managed and operated by an admin. It provides a robust interface for users to buy courses and for the admin to manage course listings and user activities.
+CodeIT is a course-selling web platform where users can browse and purchase educational courses, managed and operated by an admin. It provides a robust interface for users to buy courses and for the admin to manage course listings and user activities.
 
 ## Table of Contents
 - [Features](#features)
@@ -33,8 +33,8 @@ GyanSagar is a course-selling web platform where users can browse and purchase e
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/BearerOP/gyansagar-backend.git
-   cd gyan-sagar
+   git clone https://github.com/BearerOP/e-learn-backend.git
+   cd e-learn-backend
    ```
 
 2. Install the dependencies:
@@ -87,7 +87,7 @@ Example `.env` file:
 
 ```bash
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/gyansagar
+MONGO_URI=mongodb://localhost:27017/codeit
 JWT_SECRET=mysecretkey
 ```
 
