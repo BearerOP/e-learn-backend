@@ -47,7 +47,10 @@ const courseSchema = new Schema(
     price: { type: Number, required: true },
     thumbnail: { type: String },
     category: { type: String, required: true },
-    subCategory: { type: String }, // New subCategory field
+    subCategory: { type: String },
+    whatYouWillLearn: [
+      { heading: { type: String }, details: { type: String } }
+    ],
     tags: [{ type: String }], // New tags field
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the instructor
     tracks: [{ type: Schema.Types.ObjectId, ref: "Track" }], // Reference to tracks

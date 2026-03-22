@@ -9,6 +9,7 @@ const addCourse = async (courseData, instructor) => {
       price,
       category,
       subCategory,
+      whatYouWillLearn,
       thumbnail,
       tags,
     } = courseData;
@@ -30,6 +31,7 @@ const addCourse = async (courseData, instructor) => {
       price,
       category,
       subCategory,
+      whatYouWillLearn,
       tags,
       thumbnail,
       createdBy,
